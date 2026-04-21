@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoaMind - Golden Hour in Goa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sunset-gold: #F4A443;
+            --deep-amber: #E07B2A;
+            --ocean-deep: #0A3D5C;
+            --ocean-mid: #1A6A8A;
+            --ocean-light: #4FB3CE;
+            --seafoam: #7ECEC4;
+            --sand-light: #FFF3E0;
+            --sand-warm: #FFE0B2;
+            --coral-glow: #FF6B6B;
+            --palm-green: #2D6A4F;
+            --foam-white: #F0FFFE;
+            --dusk-purple: #6B4C8A;
+            --night-sky: #0D1B2A;
+            --text-primary: #1A1208;
+            --text-light: #F8F4EE;
+        }
+
+        /* --- GLOBAL RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'DM Sans', sans-serif; 
+            background: var(--night-sky); 
+            color: var(--text-light); 
+            overflow-x: hidden; 
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, .playfair { font-family: 'Playfair Display', serif; }
+
+        /* --- NAVBAR --- */
+        #navbar {
+            position: fixed;
+            top: 0; width: 100%; z-index: 1000;
+            padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: transparent;
+            transition: all 0.4s ease;
+        }
+        #navbar.scrolled {
+            background: rgba(10, 61, 92, 0.85); /* ocean-deep */
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+            padding: 15px 40px;
+        }
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px; font-weight: 700;
+        }
+        .nav-logo-text {
+            background: linear-gradient(to right, var(--sunset-gold), var(--seafoam));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-link {
+            text-decoration: none;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px; font-weight: 600;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s ease;
+        }
+        .nav-link:hover { color: white; border-bottom: 2px solid var(--sunset-gold); }
+        .nav-right { display: flex; gap: 20px; align-items: center; }
+        .weather-pill {
+            background: rgba(244,164,67,0.2);
+            border: 1px solid rgba(244,164,67,0.3);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 13px; font-weight: 600;
+            color: var(--sunset-gold);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn-sm-primary {
+            background: linear-gradient(135deg, var(--sunset-gold), var(--deep-amber));
+            border-radius: 50px; padding: 10px 24px;
+            color: white; font-weight: 600; font-size: 14px; text-decoration: none;
+            box-shadow: 0 4px 15px rgba(244,164,67,0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .btn-sm-primary:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(244,164,67,0.6); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            position: relative;
+            width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, #1A3A5C 0%, #2E6B8A 40%, #F4A443 85%, #E07B2A 100%);
+            overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .sun {
+            position: absolute;
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #FFF 0%, var(--sunset-gold) 60%, transparent 100%);
+            top: 65%; left: 50%; transform: translate(-50%, -50%);
+            box-shadow: 0 0 60px 20px rgba(244,164,67,0.6);
+            animation: pulseSun 3s ease-in-out infinite;
+            z-index: 1;
+        }
+        @keyframes pulseSun {
+            0%, 100% { box-shadow: 0 0 60px 20px rgba(244,164,67,0.6); }
+            50% { box-shadow: 0 0 80px 30px rgba(244,164,67,0.8); }
+        }
+
+        /* Hero Content */
+        .hero-content {
+            position: relative; z-index: 10;
+            text-align: center; margin-top: -10vh;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .hero-eyebrow {
+            color: var(--seafoam); font-size: 11px; font-weight: 700;
+            letter-spacing: 0.3em; margin-bottom: 20px;
+        }
+        .hero-title {
+            font-size: 96px; color: white;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.3);
+            line-height: 1.1; overflow: hidden;
+        }
+        .hero-title span {
+            display: inline-block;
+            opacity: 0; transform: translateY(30px);
+            animation: textReveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        .hero-title span:nth-child(1) { animation-delay: 0.3s; }
+        .hero-title span:nth-child(2) { animation-delay: 0.5s; padding-left: 15px;}
+        .hero-subtitle {
+            font-size: 48px; color: var(--sunset-gold);
+            font-style: italic; margin-bottom: 25px;
+            opacity: 0; transform: translateY(30px);
+            animation: textReveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.7s forwards;
+        }
+        .hero-body {
+            font-size: 18px; color: var(--sand-light); opacity: 0;
+            letter-spacing: 0.05em; font-weight: 400; margin-bottom: 40px;
+            animation: fadeUp 1s ease 1s forwards;
+        }
+        @keyframes textReveal { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUp { to { opacity: 0.85; } }
+
+        /* Buttons */
+        .hero-actions { display: flex; gap: 20px; opacity: 0; animation: fadeUp 1s ease 1.2s forwards; }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--sunset-gold), var(--deep-amber));
+            border-radius: 50px; padding: 16px 40px;
+            color: white; font-weight: 600; font-size: 16px; text-decoration: none;
+            box-shadow: 0 8px 32px rgba(244,164,67,0.5);
+            transition: 0.3s ease;
+        }
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 10px 40px rgba(244,164,67,0.7); filter: brightness(1.1); }
+        .btn-secondary {
+            border: 2px solid rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50px; padding: 16px 40px;
+            color: white; font-weight: 600; font-size: 16px; text-decoration: none;
+            transition: 0.3s ease;
+        }
+        .btn-secondary:hover { border-color: white; background: rgba(255,255,255,0.2); }
+
+        /* Waves */
+        .waves-container {
+            position: absolute; bottom: 0; left: 0; width: 100%; overflow: hidden; line-height: 0; z-index: 2; height: 250px;
+        }
+        .wave { position: absolute; bottom: 0; left: 0; width: 200%; height: 100%; background-repeat: repeat-x; background-size: 50% 100%; origin: bottom; }
+        .wave1 {
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,40 C150,80 350,0 600,40 C850,80 1050,0 1200,40 L1200,120 L0,120 Z" fill="%230A3D5C"/></svg>');
+            opacity: 0.8; height: 160px; animation: waveFloat 8s linear infinite; z-index: 1;
+        }
+        .wave2 {
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,60 C200,10 400,110 600,60 C800,10 1000,110 1200,60 L1200,120 L0,120 Z" fill="%231A6A8A"/></svg>');
+            opacity: 0.85; height: 190px; animation: waveFloatRev 6s linear infinite reverse; z-index: 2;
+        }
+        .wave3 {
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,20 C150,60 300,0 600,60 C900,120 1050,40 1200,80 L1200,120 L0,120 Z" fill="%234FB3CE"/></svg>');
+            opacity: 0.9; height: 220px; animation: waveFloat 4s linear infinite; z-index: 3;
+        }
+        @keyframes waveFloat { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes waveFloatRev { 0% { transform: translateX(0); } 100% { transform: translateX(50%); } }
+
+        /* Floating Chevron */
+        .scroll-down {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            width: 30px; height: 30px; z-index: 10; opacity: 0.7;
+            animation: bounce 2s infinite;
+        }
+        .scroll-down svg { width: 100%; height: 100%; fill: none; stroke: white; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); } 40% { transform: translate(-50%, -10px); } 60% { transform: translate(-50%, -5px); } }
+
+        /* Particles container */
+        #particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
+        .particle {
+            position: absolute; border-radius: 50%; background: var(--sunset-gold);
+            box-shadow: 0 0 10px 2px rgba(255,255,255,0.5);
+            animation: floatUp linear infinite; opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100px) scale(0); opacity: 0; }
+            20% { opacity: 0.8; transform: translateY(0) scale(1); }
+            80% { opacity: 0.8; transform: translateY(-300px) scale(1); }
+            100% { transform: translateY(-400px) scale(0); opacity: 0; }
+        }
+
+        /* --- TICKER SECTION --- */
+        .ticker-section {
+            background: var(--ocean-deep); padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; align-items: center; overflow: hidden; position: relative;
+        }
+        .ticker-label {
+            position: absolute; left: 0; top: 0; height: 100%; z-index: 5;
+            background: linear-gradient(90deg, var(--ocean-deep) 70%, transparent);
+            padding: 0 30px; display: flex; align-items: center; gap: 8px;
+            color: var(--seafoam); font-size: 12px; font-weight: 700; letter-spacing: 0.1em;
+        }
+        .ticker-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: pulseRed 1.5s infinite; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(255,0,0,0.7); } 70% { box-shadow: 0 0 0 6px rgba(255,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(255,0,0,0); } }
+        
+        .ticker-track {
+            display: flex; gap: 20px; white-space: nowrap; padding-left: 180px;
+            animation: scrollTicker 30s linear infinite;
+        }
+        .ticker-track:hover { animation-play-state: paused; }
+        @keyframes scrollTicker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        
+        .ticker-pill {
+            display: inline-flex; align-items: center; gap: 10px;
+            border-radius: 50px; padding: 8px 20px; border: 1px solid transparent;
+        }
+        .pill-name { font-size: 13px; font-weight: 600; color: white; }
+        .pill-status { display: flex; align-items: center; gap: 5px; opacity: 0.6; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .stat-dot { width: 6px; height: 6px; border-radius: 50%; }
+        
+        /* Crowd Classes */
+        .crowd-low { background: rgba(46,213,115,0.15); border-color: rgba(46,213,115,0.3); }
+        .crowd-low .stat-dot { background: #2ED573; }
+        .crowd-mod { background: rgba(244,164,67,0.15); border-color: var(--sunset-gold); }
+        .crowd-mod .stat-dot { background: var(--sunset-gold); }
+        .crowd-high { background: rgba(255,107,107,0.15); border-color: var(--coral-glow); }
+        .crowd-high .stat-dot { background: var(--coral-glow); }
+        .crowd-vhigh { background: rgba(255,50,50,0.2); border-color: red; }
+        .crowd-vhigh .stat-dot { background: red; animation: pulseRed 1s infinite; }
+
+        /* --- AI RECOMMENDED SECTION --- */
+        .recommendations {
+            padding: 100px 40px;
+            background: linear-gradient(180deg, var(--ocean-deep) 0%, var(--night-sky) 100%);
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-title { font-size: 48px; color: white; margin-bottom: 12px; }
+        .section-sub { font-size: 16px; color: var(--seafoam); font-weight: 500; }
+
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;
+            width: 100%; max-width: 1200px;
+        }
+        .dest-card {
+            background: linear-gradient(145deg, rgba(26,106,138,0.4), rgba(10,61,92,0.6));
+            border: 1px solid rgba(79,179,206,0.2);
+            border-radius: 24px; padding: 28px;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            position: relative; overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; cursor: pointer;
+        }
+        .dest-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            border-color: rgba(244,164,67,0.5);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px rgba(244,164,67,0.1);
+        }
+        .card-bg-icon {
+            position: absolute; bottom: -20px; right: -10px;
+            font-size: 120px; opacity: 0.05; pointer-events: none;
+            transition: all 0.5s ease;
+        }
+        .dest-card:hover .card-bg-icon { transform: scale(1.1) rotate(-10deg); opacity: 0.08; }
+        
+        .ai-badge {
+            position: absolute; top: 24px; right: 24px;
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: conic-gradient(var(--sunset-gold) 92%, rgba(255,255,255,0.1) 0);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .ai-badge::before {
+            content: ''; position: absolute; inset: 4px; border-radius: 50%;
+            background: #10304a; z-index: 0;
+        }
+        .ai-badge-val { position: relative; z-index: 1; font-weight: 700; font-size: 18px; color: var(--sunset-gold); line-height: 1; }
+        .ai-badge-lbl { position: relative; z-index: 1; font-size: 9px; font-weight: 700; color: white; margin-top: 2px; opacity: 0.8; text-transform: uppercase; }
+
+        .tag-pill {
+            display: inline-block; padding: 4px 10px; border-radius: 50px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+        .tag-beach { background: rgba(79,179,206,0.15); color: var(--ocean-light); border: 1px solid rgba(79,179,206,0.3); }
+        .tag-heritage { background: rgba(244,164,67,0.15); color: var(--sunset-gold); border: 1px solid rgba(244,164,67,0.3); }
+        .tag-nature { background: rgba(45,106,79,0.2); color: #4ade80; border: 1px solid rgba(45,106,79,0.3); }
+
+        .card-title { font-size: 24px; color: white; margin-bottom: 12px; }
+        .card-desc { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 44px;}
+
+        .stats-row { display: flex; gap: 16px; margin-top: 20px; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px;}
+        .stat-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+        
+        .btn-ghost {
+            margin-top: auto; padding-top: 24px;
+            width: 100%;
+        }
+        .btn-ghost button {
+            width: 100%; padding: 12px; border-radius: 12px;
+            background: linear-gradient(135deg, rgba(244,164,67,0.2), rgba(224,123,42,0.2));
+            border: 1px solid rgba(244,164,67,0.4);
+            color: var(--sunset-gold); font-size: 14px; font-weight: 700;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            transition: 0.3s ease;
+        }
+        .dest-card:hover .btn-ghost button { background: linear-gradient(135deg, var(--sunset-gold), var(--deep-amber)); color: var(--night-sky); box-shadow: 0 4px 15px rgba(244,164,67,0.3);}
+
+        /* --- FEATURES SECTION --- */
+        .features {
+            background: var(--sand-light); 
+            padding: 100px 40px; position: relative;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        /* CSS Noise Texture for sand */
+        .features::before {
+            content: ''; position: absolute; inset: 0; opacity: 0.4; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
+        .feat-header { text-align: center; margin-bottom: 60px; position: relative; z-index: 1;}
+        .feat-title { font-size: 44px; color: var(--ocean-deep); margin-bottom: 10px; position: relative; display: inline-block;}
+        .feat-title svg { position: absolute; bottom: -10px; left: 0; width: 100%; height: 12px;}
+        
+        .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1100px; width: 100%; position: relative; z-index: 1;}
+        .feat-card {
+            background: white; border-radius: 20px; padding: 36px;
+            box-shadow: 0 4px 24px rgba(10,61,92,0.08);
+            transition: 0.3s ease; position: relative; overflow: hidden;
+        }
+        .feat-card:hover { box-shadow: 0 12px 40px rgba(10,61,92,0.15); transform: translateY(-4px); }
+        .feat-c1 { border-top: 4px solid var(--ocean-mid); }
+        .feat-c2 { border-top: 4px solid var(--sunset-gold); }
+        .feat-c3 { border-top: 4px solid var(--coral-glow); }
+        
+        .feat-icon-wrap { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 24px; }
+        .feat-c1 .feat-icon-wrap { background: rgba(26,106,138,0.1); }
+        .feat-c2 .feat-icon-wrap { background: rgba(244,164,67,0.1); }
+        .feat-c3 .feat-icon-wrap { background: rgba(255,107,107,0.1); }
+        
+        .feat-name { font-size: 20px; font-weight: 700; color: var(--ocean-deep); margin-bottom: 12px; }
+        .feat-desc { font-size: 15px; color: #666; line-height: 1.7; font-weight: 400;}
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hero-title { font-size: 64px; }
+            .hero-subtitle { font-size: 32px; }
+            .nav-links { display: none; }
+        }
+        @media (max-width: 600px) {
+            .hero-title { font-size: 48px; }
+            .hero-actions { flex-direction: column; width: 100%; padding: 0 20px;}
+            .btn-primary, .btn-secondary { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav id="navbar">
+        <div class="nav-logo"><a href="#" class="nav-logo-text" style="text-decoration:none">🌴 GoaMind</a></div>
+        <div class="nav-links">
+            <a href="#" class="nav-link">Explore Area</a>
+            <a href="#" class="nav-link">AI Itinerary</a>
+            <a href="#" class="nav-link">Live Radar</a>
+        </div>
+        <div class="nav-right">
+            <div class="weather-pill">☀️ 28°C · Goa</div>
+            <a href="#" class="btn-sm-primary">Start Planning</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div id="particles"></div>
+        <div class="sun"></div>
+        
+        <div class="hero-content">
+            <div class="hero-eyebrow">POWERED BY AI</div>
+            <h1 class="hero-title"><span>Discover</span> <span>Goa</span></h1>
+            <h2 class="hero-subtitle playfair">Like Never Before</h2>
+            <p class="hero-body">Real-time AI · Live crowd intelligence · Personalized journeys</p>
+            
+            <div class="hero-actions">
+                <a href="#explore" class="btn-primary">Explore Goa</a>
+                <a href="#plan" class="btn-secondary">Plan My Trip</a>
+            </div>
+        </div>
+
+        <div class="waves-container">
+            <div class="wave wave1"></div>
+            <div class="wave wave2"></div>
+            <div class="wave wave3"></div>
+        </div>
+
+        <div class="scroll-down">
+            <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+    </section>
+
+    <!-- LIVE TICKER -->
+    <section class="ticker-section">
+        <div class="ticker-label"><div class="ticker-dot"></div> LIVE NOW</div>
+        <div class="ticker-track" id="ticker-track">
+            <!-- Pilled injected by JS -->
+        </div>
+    </section>
+
+    <!-- RECOMMENDATIONS -->
+    <section class="recommendations" id="explore">
+        <div class="section-header">
+            <h2 class="section-title playfair">Top Picks Right Now</h2>
+            <p class="section-sub">Scored by AI using crowd · weather · eco · budget</p>
+        </div>
+
+        <div class="cards-grid">
+            <!-- Card 1 -->
+            <div class="dest-card">
+                <div class="card-bg-icon">🏖️</div>
+                <div class="ai-badge" style="background: conic-gradient(var(--sunset-gold) 96%, rgba(255,255,255,0.1) 0);">
+                    <span class="ai-badge-val">96</span><span class="ai-badge-lbl">Score</span>
+                </div>
+                <div>
+                    <span class="tag-pill tag-beach">Coastal</span>
+                    <h3 class="card-title playfair">Palolem Beach</h3>
+                    <p class="card-desc">Perfect sunset views with unusually serene conditions right now. The southern bay is protected from current crowding.</p>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item"><span class="stat-dot" style="background: #2ED573"></span> Low</div>
+                    <div class="stat-item text-green-400" style="color: #4ade80;">🌿 9/10</div>
+                    <div class="stat-item" style="color: var(--sunset-gold);">💰 $$</div>
+                </div>
+                <div class="btn-ghost"><button>Explore Area</button></div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="dest-card">
+                <div class="card-bg-icon">🏛️</div>
+                <div class="ai-badge" style="background: conic-gradient(var(--sunset-gold) 88%, rgba(255,255,255,0.1) 0);">
+                    <span class="ai-badge-val">88</span><span class="ai-badge-lbl">Score</span>
+                </div>
+                <div>
+                    <span class="tag-pill tag-heritage">Heritage</span>
+                    <h3 class="card-title playfair">Fontainhas</h3>
+                    <p class="card-desc">The Latin Quarter looks spectacular in golden hour light. Cafes are open with immediate seating available.</p>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item"><span class="stat-dot" style="background: var(--sunset-gold)"></span> Mod</div>
+                    <div class="stat-item" style="color: #4ade80;">🌿 8/10</div>
+                    <div class="stat-item" style="color: var(--sunset-gold);">💰 $</div>
+                </div>
+                <div class="btn-ghost"><button>Explore Area</button></div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="dest-card">
+                <div class="card-bg-icon">🌴</div>
+                <div class="ai-badge" style="background: conic-gradient(var(--sunset-gold) 82%, rgba(255,255,255,0.1) 0);">
+                    <span class="ai-badge-val">82</span><span class="ai-badge-lbl">Score</span>
+                </div>
+                <div>
+                    <span class="tag-pill tag-nature">Nature</span>
+                    <h3 class="card-title playfair">Divar Island</h3>
+                    <p class="card-desc">Take the sunset ferry. Atmospheric tranquility completely isolated from the northern tourist density.</p>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item"><span class="stat-dot" style="background: #2ED573"></span> Low</div>
+                    <div class="stat-item" style="color: #4ade80;">🌿 10/10</div>
+                    <div class="stat-item" style="color: var(--sunset-gold);">💰 $</div>
+                </div>
+                <div class="btn-ghost"><button>Explore Area</button></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="plan">
+        <div class="feat-header">
+            <h2 class="feat-title playfair">Your Smart Travel Companion
+                <svg viewBox="0 0 300 20" preserveAspectRatio="none"><path d="M0,10 Q50,20 100,10 T200,10 T300,10" fill="none" stroke="var(--sunset-gold)" stroke-width="4" stroke-linecap="round"/></svg>
+            </h2>
+        </div>
+        
+        <div class="feat-grid">
+            <div class="feat-card feat-c1">
+                <div class="feat-icon-wrap">🗺️</div>
+                <h3 class="feat-name">Live Crowd Intelligence</h3>
+                <p class="feat-desc">See real-time crowd levels across all Goa's top spots before you go. Save hours of traffic and bypass tourist traps dynamically.</p>
+            </div>
+            <div class="feat-card feat-c2">
+                <div class="feat-icon-wrap">🤖</div>
+                <h3 class="feat-name">AI Itinerary Builder</h3>
+                <p class="feat-desc">Tell us your vibe. Get a perfect day-by-day Goa itinerary in seconds compiled by large language models factoring in weather and traffic.</p>
+            </div>
+            <div class="feat-card feat-c3">
+                <div class="feat-icon-wrap">🌿</div>
+                <h3 class="feat-name">Eco-Conscious Scoring</h3>
+                <p class="feat-desc">Every location is rated against sustainability metrics so you can actively protect the rich coastal biodiversity while you travel.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 1. Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 80) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        // 2. Generate floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            const size = Math.random() * 4 + 2;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 50 + 50}%`;
+            
+            const duration = Math.random() * 10 + 15;
+            const delay = Math.random() * 15;
+            particle.style.animationDuration = `${duration}s`;
+            particle.style.animationDelay = `${delay}s`;
+            
+            particlesContainer.appendChild(particle);
+        }
+
+        // 3. Populate Live Ticker
+        const tickerData = [
+            { name: "Baga Beach", level: "very_high", cls: "crowd-vhigh", lbl: "VERY HIGH" },
+            { name: "Chapora Fort", level: "mod", cls: "crowd-mod", lbl: "MODERATE" },
+            { name: "Ashwem Beach", level: "low", cls: "crowd-low", lbl: "LOW" },
+            { name: "Dudhsagar", level: "high", cls: "crowd-high", lbl: "HIGH" },
+            { name: "Fontainhas", level: "low", cls: "crowd-low", lbl: "LOW" },
+            { name: "Anjuna Flea Market", level: "high", cls: "crowd-high", lbl: "HIGH" },
+            { name: "Morjim", level: "low", cls: "crowd-low", lbl: "LOW" },
+            { name: "Calangute", level: "very_high", cls: "crowd-vhigh", lbl: "VERY HIGH" }
+        ];
+
+        const track = document.getElementById('ticker-track');
+        
+        // Double the data for seamless continuous loop
+        const displayData = [...tickerData, ...tickerData, ...tickerData];
+        
+        displayData.forEach(loc => {
+            const pill = document.createElement('div');
+            pill.className = `ticker-pill ${loc.cls}`;
+            pill.innerHTML = `
+                <span class="pill-name">${loc.name}</span>
+                <div class="pill-status"><span class="stat-dot"></span> ${loc.lbl}</div>
+            `;
+            track.appendChild(pill);
+        });
+    </script>
+</body>
+</html>
